@@ -8,7 +8,8 @@ output:
 
 
 ## Loading and preprocessing the data
-```{r loadandprocess}
+
+```r
 unzip("activity.zip")
 activity<-read.csv("activity.csv")
 activity$date<- as.Date(activity$date, format= "%Y-%m-%d")
@@ -16,7 +17,8 @@ activity$date<- as.Date(activity$date, format= "%Y-%m-%d")
 
 ## What is mean total number of steps taken per day?
 
-```{r meanSteps}
+
+```r
 #mean total number of steps taken per day
 stepsTot<- with(activity, tapply(steps, date,sum, na.rm=TRUE))
 stepsTotdf<- data.frame(Date=names(stepsTot), Steps=stepsTot)
@@ -28,10 +30,13 @@ abline(v=medS, col="blue", lwd=3)
 legend("topright", legend=c("Mean", "Median"), col=c("red", "blue"), lwd=3)
 ```
 
-The mean steps per day is `r meanS` and the median steps per day is `r medS`.
+![](PA1_template_files/figure-html/meanSteps-1.png)<!-- -->
+
+The mean steps per day is 9354.2295082 and the median steps per day is 10395.
 
 ## What is the average daily activity pattern?
-```{r averagedailypattern}
+
+```r
 intervalavg<- with(activity, tapply(steps, interval, mean, na.rm=TRUE))
 intervalAvgdf<- data.frame(Interval=names(intervalavg), AvgSteps=intervalavg)
 with(intervalAvgdf, plot(Interval, AvgSteps,type="l", xlab="Time of Day",
@@ -42,18 +47,22 @@ text(as.character(as.numeric(maxInterval) + 700), max(intervalAvgdf$AvgSteps)- 1
      labels=paste("Max avg Steps at ", maxInterval))
 ```
 
+![](PA1_template_files/figure-html/averagedailypattern-1.png)<!-- -->
+
 ## Imputing missing values
 
-```{r MissingValues}
+
+```r
 #calculate the total number of missing values
 numMissingValues<- colSums(is.na(activity))
 rowsNA<-sum(numMissingValues)
 ```
-The number of rows with missing values is `r rowsNA`. Let's replace those missing
+The number of rows with missing values is 2304. Let's replace those missing
 values with the average steps and run our graph again.
 
 
-```{r}
+
+```r
 activityPlus<- activity
 activityPlus$steps[is.na(activityPlus$steps)]<-mean(activityPlus$steps, na.rm=TRUE)
 
@@ -67,11 +76,14 @@ abline(v=UmedS, col="blue", lwd=3)
 legend("topright", legend=c("Mean", "Median"), col=c("red", "blue"), lwd=3)
 ```
 
-The updated mean steps per day is `r UmeanS` and the updated median steps per day is `r UmedS`.
+![](PA1_template_files/figure-html/unnamed-chunk-1-1.png)<!-- -->
+
+The updated mean steps per day is 1.0766189\times 10^{4} and the updated median steps per day is 1.0766189\times 10^{4}.
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
-```{r Weekdaypatterns}
+
+```r
 #updated dataframe is activityPlus
 library(ggplot2)
 dow<- weekdays(activityPlus$date)
@@ -83,6 +95,8 @@ g<- ggplot(intervalTypeavg, aes(Interval, x)) + geom_line() +        facet_grid(
 g<- g + labs(y="Average Steps", x="Interval", title = "Avg Steps by Interval, Weekday vs Weekend")
 print(g)
 ```
+
+![](PA1_template_files/figure-html/Weekdaypatterns-1.png)<!-- -->
 
 
 Looks like there is more steady movement on the weekends, but more total steps around 830 weekdays.
